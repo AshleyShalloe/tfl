@@ -1,24 +1,26 @@
+<!DOCTYPE html>
 <html>
 
 <head>
     <style>
-    html{
-        font-family: sans-serif;
-    }
-    body{
-        margin: 0 auto;
-    }
+        html {
+            font-family: sans-serif;
+        }
 
-    .colourName,
-    .colourPalette{
-        color: rgb(255, 255, 255);
-        text-shadow: 0px 0px 10px black;
-        font-size: smaller;
-    }
+        body {
+            margin: 0 auto;
+        }
 
-    .stripe{
-        padding: 2px;
-    }
+        .colourName,
+        .colourPalette {
+            color: rgb(255, 255, 255);
+            text-shadow: 0px 0px 10px black;
+            font-size: smaller;
+        }
+
+        .stripe {
+            padding: 2px;
+        }
     </style>
 </head>
 
@@ -83,16 +85,117 @@
         }
     }
 
+    // just display all the colours
     var returnHTML = ""
 
-    for (var palette in tflColourStandard){
+    for (var palette in tflColourStandard) {
         var paletteCols = tflColourStandard[palette]
-        for (var col in paletteCols){
+        for (var col in paletteCols) {
             var rgbArray = paletteCols[col]
             returnHTML += `<div class="stripe" style="background: rgb(${rgbArray[0]}, ${rgbArray[1]}, ${rgbArray[2]})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span></div>`
         }
         document.getElementsByTagName("body")[0].innerHTML = returnHTML
     }
+
+    // but what if they were sorted?
+    function replaceHTMLWithSortedVersion() {
+        var allColoursSorted = {}
+        var allColoursSortedLookup = {}
+        var sortedCols
+        var sortedHTML
+
+        function leftpad(input_string, pad_string, target_length) {
+            var outstring = input_string
+            while (outstring.length < target_length) {
+                outstring = pad_string + outstring
+            }
+            return outstring
+        }
+
+        for (var palette in tflColourStandard) {
+            var paletteCols = tflColourStandard[palette]
+            for (var col in paletteCols) {
+                var rgbArray = paletteCols[col]
+                allColoursSorted[col] = parseInt(rgbArray.map(x => leftpad(x.toString(16), "0", 2)).join(""), 16) // convert to hex string then back to decimal int
+            }
+        }
+
+        // swap keys and values
+        for (var col in allColoursSorted) {
+            allColoursSortedLookup[allColoursSorted[col]] = col
+        }
+
+
+        // do sorted HTML
+        for (var deccol in allColoursSortedLookup) {
+            var hexcol = leftpad(parseInt(deccol).toString(16), "0", 6)
+            var colname = allColoursSortedLookup[deccol]
+            // console.log(deccol, hexcol, colname)
+            sortedHTML += `<div class="stripe" style="background: #${hexcol}"><span class="colourName">${colname}</span></div>`
+        }
+
+        document.getElementsByTagName("body")[0].innerHTML = sortedHTML
+
+        return allColoursSorted
+    }
+
+    function RGBToHSL(r, g, b) {
+        // Make r, g, and b fractions of 1
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        // Find greatest and smallest channel values
+        let cmin = Math.min(r, g, b),
+            cmax = Math.max(r, g, b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+        // Calculate hue
+        // No difference
+        if (delta == 0)
+            h = 0;
+        // Red is max
+        else if (cmax == r)
+            h = ((g - b) / delta) % 6;
+        // Green is max
+        else if (cmax == g)
+            h = (b - r) / delta + 2;
+        // Blue is max
+        else
+            h = (r - g) / delta + 4;
+
+        h = Math.round(h * 60);
+
+        // Make negative hues positive behind 360°
+        if (h < 0)
+            h += 360;
+        // Calculate lightness
+        l = (cmax + cmin) / 2;
+
+        // Calculate saturation
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+        // Multiply l and s by 100
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        return [h, s, l]
+    }
+
+    function doThing() {
+        var records = []
+        for (var palette in tflColourStandard) {
+            var paletteCols = tflColourStandard[palette];
+            for (var col in paletteCols) {
+                var rgbArray = paletteCols[col];
+                records.push([palette, col, RGBToHSL(rgbArray[0], rgbArray[1], rgbArray[2]).toString()]);
+            }
+        }
+        return records.join("\n")
+    }
+
 </script>
 
 </html>
