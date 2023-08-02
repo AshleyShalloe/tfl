@@ -2,6 +2,23 @@
 
 <head>
     <style>
+    html{
+        font-family: sans-serif;
+    }
+    body{
+        margin: 0 auto;
+    }
+
+    .colourName,
+    .colourPalette{
+        color: rgb(255, 255, 255);
+        text-shadow: 0px 0px 10px black;
+        font-size: smaller;
+    }
+
+    .stripe{
+        padding: 2px;
+    }
     </style>
 </head>
 
@@ -64,6 +81,17 @@
             "Legible London (yellow)": [240, 188, 11],
             "Legible London (blue)": [0, 32, 67]
         }
+    }
+
+    var returnHTML = ""
+
+    for (var palette in tflColourStandard){
+        var paletteCols = tflColourStandard[palette]
+        for (var col in paletteCols){
+            var rgbArray = paletteCols[col]
+            returnHTML += `<div class="stripe" style="background: rgb(${rgbArray[0]}, ${rgbArray[1]}, ${rgbArray[2]})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span></div>`
+        }
+        document.getElementsByTagName("body")[0].innerHTML = returnHTML
     }
 </script>
 
