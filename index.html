@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
     <style>
         html {
             font-family: sans-serif;
@@ -12,7 +14,8 @@
         }
 
         .colourName,
-        .colourPalette {
+        .colourPalette,
+        .colourHex {
             color: rgb(255, 255, 255);
             text-shadow: 0px 0px 10px black;
             font-size: smaller;
@@ -22,8 +25,29 @@
             padding: 2px;
         }
 
-        #sortButton{
+        #sortButton {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: 3em;
+            height: 3em;
+            border-radius: 100%;
+            border: 0px;
+            background: #ffffffdb;
+            box-shadow: 0px 0px 5px black;
+            transition: box-shadow 0.5s, background 0.5s;
+            transform: translate(-50%, -50%);
+        }
+
+        #sortButton:hover {
+            box-shadow: 0px 0px 20px black;
+            background: white;
+            cursor: pointer;
+        }
+
+        .colourHex {
             float: right;
+            font-family: monospace;
         }
     </style>
     <script type="text/javascript" src="tfl.js"></script>
@@ -67,7 +91,8 @@
         var paletteCols = tflColourStandard[palette]
         for (var col in paletteCols) {
             var rgbArray = paletteCols[col]
-            returnHTML += `<div class="stripe" style="background: rgb(${rgbArray[0]}, ${rgbArray[1]}, ${rgbArray[2]})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span></div>`
+            var hex = rgbToHex(rgbArray)
+            returnHTML += `<div class="stripe" style="background: rgb(${rgbArray[0]}, ${rgbArray[1]}, ${rgbArray[2]})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span><span class="colourHex">${hex}</span></div>`
         }
         document.getElementById("stripesContainer").innerHTML = returnHTML
     }
@@ -102,7 +127,8 @@
             var palette = sc["palette"]
             var col = sc["col"]
             var rgb = sc["rgbArray"].join(",")
-            sortedHTML += `<div class="stripe" style="background: rgb(${rgb})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span></div>`
+            var hex = rgbToHex(sc["rgbArray"])
+            sortedHTML += `<div class="stripe" style="background: rgb(${rgb})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span><span class="colourHex">${hex}</span></div>`
         }
 
         document.getElementById("stripesContainer").innerHTML = sortedHTML
@@ -153,16 +179,16 @@
         return [h, s, l]
     }
 
-    function doThing() {
-        var records = []
-        for (var palette in tflColourStandard) {
-            var paletteCols = tflColourStandard[palette];
-            for (var col in paletteCols) {
-                var rgbArray = paletteCols[col];
-                records.push([palette, col, RGBToHSL(rgbArray[0], rgbArray[1], rgbArray[2]).toString()]);
+    function rgbToHex(rgbArray) {
+        function leftpad(input_string, pad_string, target_length) {
+            var outstring = input_string
+            while (outstring.length < target_length) {
+                outstring = pad_string + outstring
             }
+            return outstring
         }
-        return records.join("\n")
+
+        return "#" + rgbArray.map(x => leftpad(x.toString(16), "0", 2)).join("")
     }
 
 </script>
