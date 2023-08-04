@@ -19,10 +19,18 @@
             color: rgb(255, 255, 255);
             text-shadow: 0px 0px 10px black;
             font-size: smaller;
+            display: inline-block;
+            text-overflow: ellipsis;
+            text-wrap: nowrap;
+            overflow-x: hidden;
         }
 
         .stripe {
             padding: 2px;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
         }
 
         #sortButton {
@@ -47,8 +55,12 @@
         }
 
         .colourHex {
-            float: right;
             font-family: monospace;
+        }
+
+        .colourPalette {
+            width: 200px;
+            display: none; /* away with you */
         }
     </style>
     <script type="text/javascript" src="tfl.js"></script>
@@ -93,7 +105,7 @@
         for (var col in paletteCols) {
             var rgbArray = paletteCols[col]
             var hex = rgbToHex(rgbArray)
-            returnHTML += `<div class="stripe" style="background: rgb(${rgbArray[0]}, ${rgbArray[1]}, ${rgbArray[2]})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span><span class="colourHex">${hex}</span></div>`
+            returnHTML += `<div class="stripe" style="background: rgb(${rgbArray[0]}, ${rgbArray[1]}, ${rgbArray[2]})"><div class="colourPalette">${palette}</div><div class="colourName">${col}</div><div class="colourHex">${hex}</div></div>`
         }
         document.getElementById("stripesContainer").innerHTML = returnHTML
     }
@@ -129,7 +141,7 @@
             var col = sc["col"]
             var rgb = sc["rgbArray"].join(",")
             var hex = rgbToHex(sc["rgbArray"])
-            sortedHTML += `<div class="stripe" style="background: rgb(${rgb})"><span class="colourPalette">${palette}</span> - <span class="colourName">${col}</span><span class="colourHex">${hex}</span></div>`
+            sortedHTML += `<div class="stripe" style="background: rgb(${rgb})"><div class="colourPalette">${palette}</div><div class="colourName">${col}</div><div class="colourHex">${hex}</div></div>`
         }
 
         document.getElementById("stripesContainer").innerHTML = sortedHTML
